@@ -14,7 +14,7 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python3 web.py"
+args = "uv run python web.py"
 
 [deployment]
 run = ["sh", "-c", "start index.html"]
