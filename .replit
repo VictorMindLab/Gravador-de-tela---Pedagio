@@ -18,3 +18,7 @@ args = "uv run python web.py"
 
 [deployment]
 run = ["sh", "-c", "start index.html"]
+
+[[ports]]
+localPort = 5000
+externalPort = 80
