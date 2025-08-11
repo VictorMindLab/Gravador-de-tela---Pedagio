@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gravador de Tela</title>
+    <meta name="color-scheme" content="dark light" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="brand">
+        <span class="logo">⏺</span>
+        <h1>Gravador de Tela</h1>
+      </div>
+      <div class="header-actions">
+        <a class="chip" href="#ajuda" id="helpChip">Ajuda</a>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="recorder-card">
+        <div class="video-wrapper">
+          <video id="preview" playsinline autoplay muted></video>
+          <div id="standbyOverlay" class="overlay">
+            <div class="overlay-inner">
+              <h2>Pronto para gravar</h2>
+              <p>Selecione o que deseja compartilhar quando a gravação iniciar.</p>
+            </div>
+          </div>
+          <div id="cropOverlay" class="crop-overlay" hidden>
+            <div class="crop-instructions">
+              <strong>Selecione a área</strong>
+              <span>Arraste para desenhar o retângulo. Confirme quando terminar.</span>
+              <div class="actions">
+                <button id="cropConfirmBtn" class="btn">Confirmar</button>
+                <button id="cropCancelBtn" class="btn btn-danger">Cancelar</button>
+              </div>
+            </div>
+            <div id="cropBox" class="crop-box" hidden></div>
+          </div>
+          <div class="timer" id="timer">00:00:00</div>
+        </div>
+
+        <div class="controls">
+          <div class="left">
+            <button id="recordBtn" class="btn btn-record" aria-pressed="false">
+              <span class="dot"></span>
+              <span class="label">Gravar</span>
+            </button>
+            <button id="pauseBtn" class="btn" disabled>
+              <span class="label">Pausar</span>
+            </button>
+            <button id="stopBtn" class="btn btn-danger" disabled>
+              <span class="label">Parar</span>
+            </button>
+          </div>
+
+          <div class="right">
+            <label class="toggle">
+              <input type="checkbox" id="micToggle" checked />
+              <span class="slider"></span>
+              <span class="text">Microfone</span>
+            </label>
+
+            <label class="toggle">
+              <input type="checkbox" id="sysAudioToggle" checked />
+              <span class="slider"></span>
+              <span class="text">Áudio do sistema</span>
+            </label>
+
+            <div class="selects">
+              <label class="toggle">
+                <input type="checkbox" id="areaToggle" />
+                <span class="slider"></span>
+                <span class="text">Área personalizada</span>
+              </label>
+              <button id="selectAreaBtn" class="btn" disabled>Selecionar área</button>
+              <label class="select">
+                <span>Resolução</span>
+                <select id="resSelect">
+                  <option value="" selected>Auto</option>
+                  <option value="1280x720">720p</option>
+                  <option value="1920x1080">1080p</option>
+                  <option value="2560x1440">1440p</option>
+                  <option value="3840x2160">4K</option>
+                </select>
+              </label>
+              <label class="select">
+                <span>FPS</span>
+                <select id="fpsSelect">
+                  <option value="15">15</option>
+                  <option value="24">24</option>
+                  <option value="30" selected>30</option>
+                  <option value="48">48</option>
+                  <option value="60">60</option>
+                </select>
+              </label>
+              <label class="select">
+                <span>Qualidade</span>
+                <select id="qualitySelect">
+                  <option value="5000000">Alta</option>
+                  <option value="2500000" selected>Média</option>
+                  <option value="1000000">Baixa</option>
+                </select>
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="schedules">
+        <div class="schedule-new">
+          <div class="schedule-row">
+            <div class="when">
+              <label>
+                <span>Início</span>
+                <input type="datetime-local" id="newScheduleStart" />
+              </label>
+              <label>
+                <span>Fim</span>
+                <input type="datetime-local" id="newScheduleEnd" />
+              </label>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="newAutoSave" />
+              <span class="slider"></span>
+              <span class="text">Salvar automaticamente</span>
+            </label>
+            <button id="addScheduleBtn" class="btn">Adicionar</button>
+          </div>
+          <p class="hint">Usa as configurações atuais (Resolução, FPS, Qualidade e Área) no momento da criação.</p>
+        </div>
+        <div id="scheduleList" class="schedule-list"></div>
+        <p class="hint">Mantenha esta página aberta e o computador ativo para executar os agendamentos.</p>
+      </section>
+
+      <section class="output">
+        <h3>Gravações</h3>
+        <div id="recordings" class="recordings-grid"></div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <span>Feito com ❤️ para gravar sua tela com facilidade.</span>
+    </footer>
+
+    <dialog id="helpDialog">
+      <form method="dialog">
+        <h3>Ajuda</h3>
+        <ul>
+          <li>Clique em <b>Gravar</b> e escolha a janela, aba ou tela.</li>
+          <li>Use <b>Pausar</b>/<b>Retomar</b> quando necessário.</li>
+          <li>Ao <b>Parar</b>, a gravação aparece abaixo para baixar.</li>
+          <li>Opcional: <b>Converter para MP4</b> (pode baixar ~25MB do FFmpeg).</li>
+        </ul>
+        <button class="btn">Fechar</button>
+      </form>
+    </dialog>
+
+    <script src="script.js"></script>
+  </body>
+  </html>
+
+
