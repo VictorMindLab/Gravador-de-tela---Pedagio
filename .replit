@@ -1,9 +1,8 @@
 modules = ["python-3.11", "nodejs-20", "web"]
-run = "start index.html"
+run = "python3 web.py"
 
 [nix]
 channel = "stable-25_05"
-packages = ["uwhoisd"]
 
 [workflows]
 runButton = "Run"
