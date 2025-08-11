@@ -1,4 +1,3 @@
-
 :root{
   --bg: #0b0f17;
   --panel: #121826;
@@ -289,10 +288,8 @@ video#preview{
   box-shadow: 0 0 16px rgba(255,77,109,.8);
 }
 
-.btn-danger{
-  background: radial-gradient(120% 150% at 10% 10%, rgba(255,77,109,.2), transparent 40%), 
-              linear-gradient(145deg, rgba(255,255,255,.1), rgba(255,255,255,.05));
-}
+.btn-danger{background: radial-gradient(120% 150% at 10% 10%, rgba(255,77,109,.15), transparent 40%), linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));}
+.btn-primary{background: radial-gradient(120% 150% at 10% 10%, rgba(109,179,255,.18), transparent 40%), linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02)); font-weight:600}
 
 /* Toggles melhorados */
 .toggle{
@@ -750,46 +747,46 @@ dialog li{
 @media (max-width: 768px){
   .brand h1{font-size:18px}
   .brand .logo{font-size: 24px}
-  
+
   .container{
     padding: 0 var(--spacing-sm);
   }
-  
+
   .recorder-card{
     padding: var(--spacing-lg);
   }
-  
+
   .controls{
     grid-template-columns: 1fr;
     gap: var(--spacing-md);
   }
-  
+
   .controls .left{
     justify-content: center;
   }
-  
+
   .selects{
     grid-template-columns: 1fr;
   }
-  
+
   .schedule-row{
     grid-template-columns: 1fr;
     gap: var(--spacing-md);
   }
-  
+
   .schedules .when{
     grid-template-columns: 1fr;
   }
-  
+
   .schedule-card .row{
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .schedule-card .actions{
     justify-content: center;
   }
-  
+
   .recordings-grid{
     grid-template-columns: 1fr;
   }
@@ -799,40 +796,40 @@ dialog li{
   .app-header{
     padding: var(--spacing-sm);
   }
-  
+
   .brand{
     gap: var(--spacing-sm);
   }
-  
+
   .brand h1{
     font-size: 16px;
   }
-  
+
   .brand .logo{
     font-size: 20px;
   }
-  
+
   .recorder-card{
     padding: var(--spacing-md);
   }
-  
+
   video#preview{
     height: clamp(200px, 60vw, 400px);
   }
-  
+
   .controls .left{
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .controls .left .btn{
     justify-content: center;
   }
-  
+
   .btn{
     min-height: 48px;
   }
-  
+
   .actions{
     flex-direction: column;
   }

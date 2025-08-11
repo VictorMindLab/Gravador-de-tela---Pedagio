@@ -777,8 +777,8 @@
         </div>
       </div>
       <div class="actions">
+        <button class="btn btn-primary" data-action="to-mp4">Baixar MP4</button>
         <a class="btn" download="${name}" href="${url}">Baixar WEBM</a>
-        <button class="btn" data-action="to-mp4">Converter para MP4</button>
       </div>
     `;
     const convertBtn = card.querySelector('button[data-action="to-mp4"]');
@@ -795,7 +795,7 @@
         a.download = name.replace('.webm', '.mp4');
         document.body.appendChild(a); a.click(); a.remove();
         URL.revokeObjectURL(mp4Url);
-        convertBtn.textContent = 'Converter para MP4';
+        convertBtn.textContent = 'Baixar MP4';
       } catch(err){
         console.error(err);
         alert('Falha na conversão para MP4.');
