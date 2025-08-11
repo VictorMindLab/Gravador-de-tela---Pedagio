@@ -785,20 +785,26 @@
     convertBtn.addEventListener('click', async () => {
       convertBtn.disabled = true;
       convertBtn.textContent = 'Baixando FFmpeg...';
+      
       try {
         const mp4 = await convertWebmToMp4(blob, (p) => {
           convertBtn.textContent = `Convertendo... ${Math.round(p*100)}%`;
         });
+        
         const mp4Url = URL.createObjectURL(mp4);
         const a = document.createElement('a');
         a.href = mp4Url;
         a.download = name.replace('.webm', '.mp4');
-        document.body.appendChild(a); a.click(); a.remove();
+        document.body.appendChild(a); 
+        a.click(); 
+        a.remove();
         URL.revokeObjectURL(mp4Url);
         convertBtn.textContent = 'Baixar MP4';
+        
       } catch(err){
-        console.error(err);
-        alert('Falha na conversão para MP4.');
+        console.error('Erro detalhado:', err);
+        alert(err.message || 'Falha na conversão para MP4. Tente usar o download WEBM.');
+        convertBtn.textContent = 'Baixar MP4';
       } finally {
         convertBtn.disabled = false;
       }
@@ -848,31 +854,83 @@
   let ffmpegInstance = null;
   async function loadFFmpeg(){
     if (ffmpegInstance) return ffmpegInstance;
-    await new Promise((resolve, reject) => {
-      const s = document.createElement('script');
-      s.src = 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.6/dist/ffmpeg.min.js';
-      s.async = true;
-      s.onload = resolve; s.onerror = reject;
-      document.head.appendChild(s);
-    });
-    const { createFFmpeg, fetchFile } = window.FFmpeg;
-    const ffmpeg = createFFmpeg({ log: false });
-    await ffmpeg.load();
-    ffmpegInstance = { ffmpeg, fetchFile };
-    return ffmpegInstance;
+    
+    try {
+      await new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = 'https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js';
+        s.async = true;
+        s.onload = resolve; 
+        s.onerror = reject;
+        document.head.appendChild(s);
+      });
+      
+      const { createFFmpeg, fetchFile } = window.FFmpeg;
+      const ffmpeg = createFFmpeg({ 
+        log: true,
+        corePath: 'https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js'
+      });
+      
+      await ffmpeg.load();
+      ffmpegInstance = { ffmpeg, fetchFile };
+      return ffmpegInstance;
+    } catch (error) {
+      console.error('Erro ao carregar FFmpeg:', error);
+      throw new Error('Falha ao carregar FFmpeg. Verifique sua conexão com a internet.');
+    }
   }
 
   async function convertWebmToMp4(webmBlob, onProgress){
-    const { ffmpeg, fetchFile } = await loadFFmpeg();
-    ffmpeg.setProgress(({ ratio }) => { if (onProgress) onProgress(ratio || 0); });
-    const inName = 'input.webm';
-    const outName = 'output.mp4';
-    ffmpeg.FS('writeFile', inName, await fetchFile(webmBlob));
-    await ffmpeg.run('-i', inName, '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '23', '-pix_fmt', 'yuv420p', '-c:a', 'aac', outName);
-    const data = ffmpeg.FS('readFile', outName);
-    ffmpeg.FS('unlink', inName);
-    ffmpeg.FS('unlink', outName);
-    return new Blob([data.buffer], { type: 'video/mp4' });
+    try {
+      const { ffmpeg, fetchFile } = await loadFFmpeg();
+      
+      ffmpeg.setProgress(({ ratio }) => { 
+        if (onProgress) onProgress(Math.max(0, Math.min(1, ratio || 0))); 
+      });
+      
+      const inName = 'input.webm';
+      const outName = 'output.mp4';
+      
+      // Escrever arquivo de entrada
+      ffmpeg.FS('writeFile', inName, await fetchFile(webmBlob));
+      
+      // Executar conversão com parâmetros mais compatíveis
+      await ffmpeg.run(
+        '-i', inName,
+        '-c:v', 'libx264', 
+        '-preset', 'medium',
+        '-crf', '28',
+        '-pix_fmt', 'yuv420p',
+        '-c:a', 'aac',
+        '-b:a', '128k',
+        '-movflags', '+faststart',
+        '-y', // sobrescrever arquivo se existir
+        outName
+      );
+      
+      // Ler arquivo de saída
+      const data = ffmpeg.FS('readFile', outName);
+      
+      // Limpar arquivos temporários
+      try {
+        ffmpeg.FS('unlink', inName);
+        ffmpeg.FS('unlink', outName);
+      } catch (cleanupError) {
+        console.warn('Erro na limpeza dos arquivos temporários:', cleanupError);
+      }
+      
+      return new Blob([data.buffer], { type: 'video/mp4' });
+      
+    } catch (error) {
+      console.error('Erro na conversão:', error);
+      if (error.message.includes('SharedArrayBuffer')) {
+        throw new Error('Seu navegador não suporta a conversão MP4. Tente usar o download WEBM.');
+      } else if (error.message.includes('network')) {
+        throw new Error('Erro de conexão. Verifique sua internet e tente novamente.');
+      } else {
+        throw new Error('Falha na conversão para MP4. O arquivo pode estar corrompido.');
+      }
+    }
   }
 
   // Initial
